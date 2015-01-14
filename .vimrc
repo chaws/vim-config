@@ -1,3 +1,6 @@
+" Set line numbers
+set nu
+
 " Load Pathogen
 execute pathogen#infect()
 
