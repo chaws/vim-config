@@ -33,7 +33,7 @@ syn on
 set encoding=UTF-8
 
 "status line"
-set statusline=%(%F%m%r%h%w\ [%Y]\ %{&encoding}\ %)%=%(%l,%v\ %LL\ %p%%%)
+set statusline=%(%F%m%r%h%w\ [%Y]\ %{&encoding}\ %)%=%(%B@%l,%v\ %LL\ %p%%%)
 set laststatus=2
 
 "tab config"
