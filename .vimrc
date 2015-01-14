@@ -41,11 +41,14 @@ set ts=4
 setlocal expandtab
 setlocal softtabstop=4
 
+" Set indentation
+set smartindent
+
 " 4 spaces for indenting
 set shiftwidth=4
 
 "Disable autoindentation"
-set noai
+"set noai
 
 " Enable filetype plugins "
 filetype plugin on
