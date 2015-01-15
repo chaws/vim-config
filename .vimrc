@@ -79,3 +79,16 @@ vmap <s-tab> <gv
 
 " Highlight the current line
 set cursorline
+
+" Add shortcuts to move lines
+" Normal mode
+nnoremap <C-Down> :m .+1<CR>==
+nnoremap <C-Up> :m .-2<CR>==
+
+" Insert mode
+inoremap <C-Down> <ESC>:m .+1<CR>==gi
+inoremap <C-Up> <ESC>:m .-2<CR>==gi
+
+" Visual mode
+vnoremap <C-Down> :m '>+1<CR>gv=gv
+vnoremap <C-Up> :m '<-2<CR>gv=gv
