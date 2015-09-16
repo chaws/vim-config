@@ -1,6 +1,9 @@
 " Set line numbers
 set nu
 
+" Set numbers to be grey
+highlight LineNr ctermfg=grey
+
 " Load Pathogen
 execute pathogen#infect()
 
