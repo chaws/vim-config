@@ -17,7 +17,8 @@ set background=dark
 " colorscheme elflord
 " colorscheme delek
 " colorscheme desert
-colorscheme default
+" colorscheme default
+colorscheme PaperColor
 
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
@@ -38,6 +39,22 @@ set encoding=UTF-8
 "status line"
 set statusline=%(%F%m%r%h%w\ [%Y]\ %{&encoding}\ %)%=%(%B@%l,%v\ %LL\ %p%%%)
 set laststatus=2
+set linespace=0
+"let g:airline_theme = 'badwolf'
+let g:airline_theme = 'wombatseocam'
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#hunks#enabled = 0
+let g:airline#extensions#branch#enabled = 1
+" tablines are cool but are degrading performance
+"let g:airline#extensions#tabline#enabled = 1
+
+" Keep git sign column as default (+, -, ~, etc.)
+"let g:gitgutter_override_sign_column_highlight = 0
+let g:gitgutter_max_signs = 10000
+
+" Change line number color
+" (by default gitgutter uses same color as LineNr)
+highlight LineNr ctermbg=235
 
 "tab config"
 set ts=4
@@ -62,6 +79,17 @@ set completeopt=menu
 " Allow modelines"
 set modelines=1
 
+set spelllang=en,pt_br
+
+" vim markdown settings
+let g:vim_markdown_folding_disabled=1
+
+" force vim to use 265 colors
+set term=screen-256color
+
+" remove trailing spaces for certain file types
+autocmd FileType python,javascript,ruby,c,cpp,java,php autocmd BufWritePre <buffer> :%s/\s\+$//e
+
 "------------ Mappings --------------"
 
 "+ and - to resize splited windows"
@@ -72,10 +100,9 @@ map = <C-W>+
 vmap <tab> >gv
 vmap <s-tab> <gv
 
-
 "--------------- Setting last updated ---------------"
 " Expand "<!-- DATE -->{-}00:00:00" to current timestamp in English
-" Used in my resume!
+" Used in seocam's resume!
 
 :au BufWritePre *.html exe "norm mz"|exe '%s/\(<!-- DATE -->\).\{-\}\d\d:\d\d:\d\d/\1'.strftime("%b %d, %Y %X")."/e"|norm `z
 :au BufWritePre *.html exe "norm mz"|exe '%s/\(data-lastupdate datetime=\"\)\d\d\d\d-\d\d-\d\d/\1'.strftime("%Y-%m-%d")."/e"|norm `z
