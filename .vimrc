@@ -1,119 +1,115 @@
-" Set line numbers
-set nu
+" *************************** Initialization **************
 
-" Set numbers to be grey
-highlight LineNr ctermfg=grey
+" ***** Manage sessions, so I don't have to open everything over and over
+function! MakeSession()
+    let b:sessiondir = $HOME . "/.vim/sessions" . getcwd()
+    if (filewritable(b:sessiondir) != 2)
+        exe 'silent !mkdir -p ' b:sessiondir
+		redraw!
+	endif
+	let b:filename = b:sessiondir . '/session.vim'
+	exe "mksession! " . b:filename
+endfunction
 
-" Load Pathogen
-execute pathogen#infect()
+function! LoadSession()
+    let b:sessiondir = $HOME . "/.vim/sessions" . getcwd()
+	let b:sessionfile = b:sessiondir . "/session.vim"
+	if (filereadable(b:sessionfile))
+	    exe 'source ' b:sessionfile
+	else
+	    echo "No session loaded."
+	endif
+endfunction
+au VimEnter * :call LoadSession()
+au VimLeave * :call MakeSession()
 
-" Use Vim settings, rather then Vi settings (much better!).
-set nocompatible
+" ***** How can I open NERDTree automatically when vim starts up on opening a directory?
+" Make NERDTree to fold/unfold with one click of a mouse:
+" https://github.com/scrooloose/nerdtree/issues/531#issuecomment-174218498 
+let NERDTreeMouseMode=2
+" https://medium.com/@victormours/a-better-nerdtree-setup-3d3921abc0b9#.ibrmx5asj
+"let NERDTreeQuitOnOpen=1
+" https://github.com/scrooloose/nerdtree/issues/323
+let g:NERDTreeMapOpenInTab='<2-LeftMouse>'
 
-" Set background type"
-set background=dark
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+autocmd VimLeave * NERDTreeClose
 
-"color scheme"
-" colorscheme elflord
-" colorscheme delek
-" colorscheme desert
-" colorscheme default
-colorscheme PaperColor
+" *************************** end of Initialization *******
 
-" allow backspacing over everything in insert mode
-set backspace=indent,eol,start
+" *************************** Basic Settings **************
+" ****** Format
+" Set wrap (it breaks the text [visual only] if the line is too big)
+set wrap
 
-" Disable mouse "
-set mouse=
+" Highlight the current line
+set cursorline
 
-" showmatch: Show the matching bracket for the last ')'?
-set showmatch
-
-" highlight strings inside C comments
-let c_comment_strings=1
-
-"color syntax"
-syn on
+" Encoding
 set encoding=UTF-8
-
-"status line"
-set statusline=%(%F%m%r%h%w\ [%Y]\ %{&encoding}\ %)%=%(%B@%l,%v\ %LL\ %p%%%)
-set laststatus=2
-set linespace=0
-"let g:airline_theme = 'badwolf'
-let g:airline_theme = 'wombatseocam'
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#hunks#enabled = 0
-let g:airline#extensions#branch#enabled = 1
-" tablines are cool but are degrading performance
-"let g:airline#extensions#tabline#enabled = 1
-
-" Keep git sign column as default (+, -, ~, etc.)
-"let g:gitgutter_override_sign_column_highlight = 0
-let g:gitgutter_max_signs = 10000
-
-" Change line number color
-" (by default gitgutter uses same color as LineNr)
-highlight LineNr ctermbg=235
 
 "tab config"
 set ts=4
 setlocal expandtab
 setlocal softtabstop=4
-
-" Set indentation
-set smartindent
-
-" 4 spaces for indenting
 set shiftwidth=4
 
-"Disable autoindentation"
-"set noai
+" showmatch: Show the matching bracket for the last ')'?
+set showmatch
 
-" Enable filetype plugins "
-filetype plugin on
+" ***** Color
+" Syntax files
+syntax on
 
-" Disable preview code when using omni complete"
-set completeopt=menu
+" Highlight searches
+set hlsearch
 
-" Allow modelines"
-set modelines=1
+" ***** Other stuff
+" Set line numbers and make them grey
+set nu
+highlight LineNr term=bold cterm=NONE ctermfg=Grey ctermbg=NONE gui=NONE guifg=Grey guibg=NONE
 
-set spelllang=en,pt_br
+" Color scheme
+colorscheme desert 
 
-" vim markdown settings
-let g:vim_markdown_folding_disabled=1
+" Disable mouse "
+set mouse=a
 
-" force vim to use 265 colors
-set term=screen-256color
+" Indent stuff
+filetype plugin indent on
+" *************************** end of Basic Settings ********
 
-" remove trailing spaces for certain file types
-autocmd FileType python,javascript,ruby,c,cpp,java,php autocmd BufWritePre <buffer> :%s/\s\+$//e
+" ************************* Key Mappings *******************
+" ***** Go straight to the vim command line (avoid ESC+:)
+nnoremap <C-x> :
+inoremap <C-x> <ESC>:
+vnoremap <C-x> <ESC>:
 
-"------------ Mappings --------------"
-
-"+ and - to resize splited windows"
-map - <C-W>-
-map = <C-W>+
-
-" Make tab in v mode work like I think it should (keep highlighting):
-vmap <tab> >gv
-vmap <s-tab> <gv
-
-"--------------- Setting last updated ---------------"
-" Expand "<!-- DATE -->{-}00:00:00" to current timestamp in English
-" Used in seocam's resume!
-
-:au BufWritePre *.html exe "norm mz"|exe '%s/\(<!-- DATE -->\).\{-\}\d\d:\d\d:\d\d/\1'.strftime("%b %d, %Y %X")."/e"|norm `z
-:au BufWritePre *.html exe "norm mz"|exe '%s/\(data-lastupdate datetime=\"\)\d\d\d\d-\d\d-\d\d/\1'.strftime("%Y-%m-%d")."/e"|norm `z
-
-" Highlight the current line
-set cursorline
-
-" Add shortcuts to move lines
+" ***** Ctrl+S: Save
+" reference: http://vim.wikia.com/wiki/Map_Ctrl-S_to_save_current_or_new_files 
+" Add Ctrl-S to save in VIM. Note that some stuff was added in .bashrc
+" If the current buffer has never been saved, it will have no name,
+" call the file browser to save it, otherwise just save it.
+command! -nargs=0 -bar Update if &modified 
+                           \|    if empty(bufname('%'))
+                           \|        browse confirm write
+                           \|    else
+                           \|        confirm write
+                           \|    endif
+                           \| endif
 " Normal mode
-nnoremap <C-Down> :m .+1<CR>==
+nnoremap <silent> <C-s> :<C-u>Update<CR>
+" Insert mode
+inoremap <C-s> <C-o>:Update<CR>
+" Visual mode
+vmap <C-s> <esc>:w<CR>gv
+
+" ***** Move lines up and down
+" Normal mode
 nnoremap <C-Up> :m .-2<CR>==
+nnoremap <C-Down> :m .+1<CR>==
 
 " Insert mode
 inoremap <C-Down> <ESC>:m .+1<CR>==gi
@@ -122,3 +118,46 @@ inoremap <C-Up> <ESC>:m .-2<CR>==gi
 " Visual mode
 vnoremap <C-Down> :m '>+1<CR>gv=gv
 vnoremap <C-Up> :m '<-2<CR>gv=gv
+
+" ***** Switch mode by typing Ctrl
+" From insert to visual
+inoremap <C-v> <ESC>v
+" From visual to insert
+vnoremap <C-i> <ESC>i
+" From normal mode to insert
+nnoremap <C-i> i
+nnoremap <C-h> gT
+
+" ***** Move thru tabs
+nnoremap <C-l> gt
+inoremap <C-l> <ESC>gt
+inoremap <C-h> <ESC>gT
+vnoremap <C-l> gt
+vnoremap <C-h> gT
+
+" ***** Open tab
+nnoremap <C-t> :tabe<CR> i
+inoremap <C-t> <ESC>:tabe<CR> i
+vnoremap <C-t> <ESC><ESC>:tabe<CR> i
+
+" ****** Close tab
+nnoremap <C-w> :q!<CR>
+inoremap <C-w> <ESC>:q!<CR>
+vnoremap <C-w> :q!<CR>
+
+" ***** Find & Replace
+nnoremap <C-f> /
+inoremap <C-f> <ESC> /
+vnoremap <C-f> /
+
+" ***** Quit vim
+nnoremap <C-e> :qa!<CR>
+inoremap <C-e> <ESC>:qa!<CR>
+vnoremap <C-e> :qa!<CR>
+
+" ************************* end of Key Mappings ************
+
+" ************************* Plugins ************************
+" Run pathogen, to manage runtimepath for vim
+execute pathogen#infect()
+" ************************* end of Plugins *****************
